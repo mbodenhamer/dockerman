@@ -80,8 +80,8 @@ show:
 # Cleanup
 
 clean:
-	@$(PYDEV) fmap -r syn 'rm -f' '*.py[co]'
-	@$(PYDEV) fmap -r syn -d rmdir __pycache__
+	@$(PYDEV) fmap -r ${PACKAGE} 'rm -f' '*.py[co]'
+	@$(PYDEV) fmap -r ${PACKAGE} -d rmdir __pycache__
 	@$(PYDEV) make -C docs clean
 
 .PHONY: clean
