@@ -2,6 +2,7 @@ all: test
 
 VERSION = `cat version.txt | xargs`
 
+PACKAGE = dockerman
 IMAGE = dockerman-dev
 PYDEV = docker run --rm -it -e BE_UID=`id -u` -e BE_GID=`id -g` \
 	-v /var/run/docker.sock:/var/run/docker.sock -v $(CURDIR):/app $(IMAGE)
@@ -41,7 +42,7 @@ build: check
 # Documentation
 
 docs:
-	@$(PYDEV) sphinx-apidoc -f -o docs/ syn/ $$(find syn -name tests)
+	@$(PYDEV) sphinx-apidoc -f -o docs/ ${PACKAGE}/
 	@$(PYDEV) make -C docs html
 
 view:
