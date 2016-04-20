@@ -4,7 +4,8 @@
 import six
 from functools import partial
 from syn.base import Base, Attr
-from .cmdargs import Positional, Option, BinaryOption, arglist, render_args
+from syn.utils.cmdargs import (Positional, Option, BinaryOption, arglist, 
+                               render_args)
 
 if six.PY2:
     str = unicode
