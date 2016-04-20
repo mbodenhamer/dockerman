@@ -82,6 +82,8 @@ show:
 clean:
 	@$(PYDEV) fmap -r ${PACKAGE} 'rm -f' '*.py[co]'
 	@$(PYDEV) fmap -r ${PACKAGE} -d rmdir __pycache__
+	@$(PYDEV) fmap -r tests 'rm -f' '*.py[co]'
+	@$(PYDEV) fmap -r tests -d rmdir __pycache__
 	@$(PYDEV) make -C docs clean
 
 .PHONY: clean
