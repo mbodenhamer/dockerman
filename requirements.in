@@ -1,3 +1,4 @@
 docker-py
 six
 syn
+syn.utils

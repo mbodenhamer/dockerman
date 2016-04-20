@@ -10,4 +10,5 @@ py2-ipaddress==3.4.1      # via docker-py
 requests==2.9.1           # via docker-py
 six==1.10.0
 syn==0.0.1
+syn.utils=0.0.1
 websocket-client==0.37.0  # via docker-py
