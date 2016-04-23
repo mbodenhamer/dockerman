@@ -46,7 +46,7 @@ dict(image = Attr(STR, doc='The image to run', groups=(RA, CC)),
      volumes_from = OAttr(List(STR), doc="List of container names or Ids to "
                           "get volumes from", call=comma_split, 
                           groups=(RA, CC)),
-     network_disabled = Attr(bool, False, "Disable networking", groups=(RA, CC)),
+     network_disabled = Attr(bool, False, "Disable networking", groups=(CC,)),
      name = OAttr(STR, doc='A name for the container', groups=(RA, CC)),
      entrypoint = OAttr(STR, call=join, doc='Container entrypoint',
                         groups=(RA, CC)),
@@ -64,6 +64,7 @@ dict(image = Attr(STR, doc='The image to run', groups=(RA, CC)),
                            groups=(RA, CC)),
      stop_signal = OAttr(STR, doc='The signal used to stop the container', 
                          groups=(RA, CC)),
+     id = OAttr(STR, doc='The id of the running container', internal=True),
     )
 
 #-------------------------------------------------------------------------------
@@ -81,7 +82,6 @@ with arglist(RUN_ARGS):
                     dns = Option('--dns'),
                     volumes = Option('-v'),
                     volumes_from = Option('--volumes-from'),
-                    # network_disable = Literal('--net none')
                     name = Single('--name'),
                     entrypoint = Single('--entrypoint'),
                     cpu_shares = Single('--cpu-shares'),
