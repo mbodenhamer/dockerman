@@ -19,5 +19,5 @@ dev:
 prod:
   pip:
     - docker
-    - syn>=0.0.3
+    - syn>=0.0.14
     - syn.utils
