@@ -1,7 +1,7 @@
-FROM mbodenhamer/python-dev:latest
+FROM mbodenhamer/python-dev:0.2
 COPY dev/ /usr/local/bin/
 
 # Install docker client
-RUN curl -sSL -O https://get.docker.com/builds/Linux/x86_64/docker-1.9.1.tgz \
-    && tar zxf docker-1.9.1.tgz -C / \
-    && rm docker-1.9.1.tgz
+RUN curl -sSL -O https://download.docker.com/linux/static/stable/x86_64/docker-17.06.2-ce.tgz \
+    && tar zxf docker-17.06.2-ce.tgz -C / \
+    && rm docker-17.06.2-ce.tgz
