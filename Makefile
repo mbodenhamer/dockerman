@@ -3,10 +3,10 @@ all: test
 VERSION = `cat version.txt | xargs`
 
 PACKAGE = dockerman
-IMAGE = dockerman-dev
+IMAGE = mbodenhamer/${PACKAGE}-dev
 PYDEV = docker run --rm -it -e BE_UID=`id -u` -e BE_GID=`id -g` \
 	-v /var/run/docker.sock:/var/run/docker.sock -v $(CURDIR):/app $(IMAGE)
-VERSIONS = 2.7.11,3.3.6,3.4.4,3.5.1
+VERSIONS = 2.7.14,3.6.2
 
 #-------------------------------------------------------------------------------
 # Docker image management
@@ -16,18 +16,26 @@ docker-build:
 
 docker-first-build:
 	@docker build -t $(IMAGE):latest --build-arg versions=$(VERSIONS) \
-	--build-arg reqs=requirements.in \
-	--build-arg devreqs=dev-requirements.in .
+	--build-arg reqs=requirements.yml .
+	@$(PYDEV) depman export dev -t pip -o dev-requirements.in --no-header
+	@$(PYDEV) depman export prod -t pip -o requirements.in --no-header
 	@$(PYDEV) pip-compile dev-requirements.in
 	@$(PYDEV) pip-compile requirements.in
 
 docker-rmi:
 	@docker rmi $(IMAGE)
 
+docker-push:
+	@docker push ${IMAGE}:latest
+
+docker-pull:
+	@docker pull ${IMAGE}:latest
+
 docker-shell:
 	@$(PYDEV) bash
 
-.PHONY: docker-build docker-first-build docker-rmi docker-shell
+.PHONY: docker-build docker-first-build docker-rmi docker-push docker-pull \
+	docker-shell
 #-------------------------------------------------------------------------------
 # Build management
 
