@@ -1,3 +1,4 @@
+Sphinx
 check-manifest
 coverage
 detox
@@ -5,7 +6,6 @@ fmap
 lxml
 nose
 pip-tools
-Sphinx
-twine
 tox
+twine
 xunitmerge
