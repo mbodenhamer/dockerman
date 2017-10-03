@@ -1,5 +1,6 @@
+from nose.tools import assert_raises
 from dockerman import Container, container
-from dockerman.utils import call, container_exists
+from dockerman.utils import container_exists
 
 #-------------------------------------------------------------------------------
 # Container start/stop/etc.
@@ -20,6 +21,8 @@ def test_container_start_stop():
     assert c.status.running is True
     assert c.status.paused is True
 
+    assert_raises(RuntimeError, c.poll, 22)
+
     c.unpause()
     assert c.status.exists is True
     assert c.status.running is True
@@ -29,6 +32,8 @@ def test_container_start_stop():
     assert c.status.exists is True
     assert c.status.running is False
     assert c.status.paused is False
+
+    assert_raises(RuntimeError, c.poll, 22)
 
     c.start()
     assert c.status.exists is True
@@ -54,6 +59,12 @@ def test_container():
         assert container_exists(name)
 
     assert not container_exists(name)
+
+#-------------------------------------------------------------------------------
+# Polling
+
+def test_polling():
+    pass
 
 #-------------------------------------------------------------------------------
 

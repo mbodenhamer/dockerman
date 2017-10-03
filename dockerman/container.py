@@ -1,5 +1,7 @@
 '''Representation of a Docker container.
 '''
+import time
+import socket
 from uuid import uuid4
 from functools import partial
 from contextlib import contextmanager
@@ -156,6 +158,7 @@ class Container(Base):
 
         return self._status
 
+    # TODO: rename to marshal_run_args
     def marshal_args(self, group):
         if group == RA:
             values = {RUN_ARGD[attr].name: val for attr, val 
@@ -180,6 +183,26 @@ class Container(Base):
     def pause(self, **kwargs):
         cmd = 'docker pause ' + self.name
         call(cmd)
+
+    def poll(self, port, **kwargs):
+        wait = kwargs.get('wait', 0.1)
+
+        if not self.status.running:
+            raise RuntimeError('Container must be running to poll')
+        if self.status.paused:
+            raise RuntimeError('Cannot poll paused container')
+
+        sock = socket.socket()
+        while True:
+            try:
+                sock.connect((self.status.ip_addr, port))
+                sock.close()
+                break
+            except socket.error as e:
+                if e.errno == 111:  # Connection refused
+                    time.sleep(wait)
+                else:
+                    raise e
 
     # TODO: add options
     def remove(self, **kwargs):
