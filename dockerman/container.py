@@ -1,8 +1,10 @@
 '''Representation of a Docker container.
 '''
-import os
+import shlex
 from uuid import uuid4
 from functools import partial
+from subprocess import Popen, PIPE
+from contextlib import contextmanager
 from syn.five import STR
 from syn.base import Base, Attr
 from syn.utils.cmdargs import (Positional, Option, BinaryOption, arglist, 
@@ -17,6 +19,14 @@ OAttr = partial(Attr, optional=True)
 comma_split = partial(split, sep=',')
 dictify_eqstrings = partial(dictify_strings, empty=False, sep='=')
 Single = partial(Option, interleave=False)
+
+#-------------------------------------------------------------------------------
+# call
+
+def call(s):
+    proc = Popen(shlex.split(s), stdout=PIPE, stderr=PIPE)
+    (out, err) = proc.communicate()
+    return out,err
 
 #-------------------------------------------------------------------------------
 # Status
@@ -177,45 +187,47 @@ class Container(Base):
 
         raise ValueError('Invalid group: {}'.format(group))
 
-    # TODO: migrate to Popen and blocking
     def pause(self, **kwargs):
         cmd = 'docker pause ' + self.name
-        print(cmd)
-        os.system(cmd)
+        call(cmd)
 
     # TODO: add options
     def remove(self, **kwargs):
         cmd = 'docker rm -f -v ' + self.name
-        print(cmd)
-        os.system(cmd)
+        call(cmd)
 
     def run(self, **kwargs):
         cmd = 'docker run'
         cmd += self.marshal_args(RA)
-        
-        print(cmd)
-        os.system(cmd)
+        call(cmd)
 
     def start(self, **kwargs):
         cmd = 'docker start ' + self.name
-        print(cmd)
-        os.system(cmd)
+        call(cmd)
 
     def stop(self, **kwargs):
         cmd = 'docker stop ' + self.name
-        print(cmd)
-        os.system(cmd)
+        call(cmd)
 
     def unpause(self, **kwargs):
         cmd = 'docker unpause ' + self.name
-        print(cmd)
-        os.system(cmd)
+        call(cmd)
 
+
+#-------------------------------------------------------------------------------
+# Container context manager
+
+@contextmanager
+def container(image, command='', **kwargs):
+    c = Container(image, command, **kwargs)
+    c.run()
+    yield
+    c.remove()
 
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Container', 'ContainerStatus',
+__all__ = ('Container', 'ContainerStatus', 'container',
            'RA', 'HC', 'CC')
 
 #-------------------------------------------------------------------------------
