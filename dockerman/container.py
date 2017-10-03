@@ -1,6 +1,7 @@
 '''Representation of a Docker container.
 '''
 import os
+from uuid import uuid4
 from functools import partial
 from syn.five import STR
 from syn.base import Base, Attr
@@ -76,7 +77,8 @@ dict(_status = Attr(ContainerStatus, init=lambda self: ContainerStatus()),
                           "get volumes from", call=comma_split, 
                           groups=(RA, CC)),
      network_disabled = Attr(bool, False, "Disable networking", groups=(CC,)),
-     name = OAttr(STR, doc='A name for the container', groups=(RA, CC)),
+     name = Attr(STR, doc='A name for the container', groups=(RA, CC),
+                 init=lambda self: uuid4().hex),
      entrypoint = OAttr(STR, call=join, doc='Container entrypoint',
                         groups=(RA, CC)),
      cpu_shares = OAttr(int, doc='CPU shares (relative weight)', 
