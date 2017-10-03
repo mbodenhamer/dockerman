@@ -1,5 +1,25 @@
 from nose.tools import assert_raises
-from dockerman import Container, RA, CC
+from dockerman import Container, ContainerStatus, RA, CC
+
+#-------------------------------------------------------------------------------
+# Status
+
+def test_containerstatus():
+    s = ContainerStatus()
+
+    assert s.id is None
+    assert s.ip_addr is None
+    assert s.exists is False
+    assert s.running is False
+    assert s.paused is False
+
+#-------------------------------------------------------------------------------
+# Container
+
+def test_container():
+    c = Container('foo')
+    assert c.image == 'foo'
+    assert c.status == ContainerStatus()
 
 #-------------------------------------------------------------------------------
 # run args marshalling

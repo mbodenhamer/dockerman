@@ -15,6 +15,19 @@ dictify_eqstrings = partial(dictify_strings, empty=False, sep='=')
 Single = partial(Option, interleave=False)
 
 #-------------------------------------------------------------------------------
+# Status
+
+
+class ContainerStatus(Base):
+    _attrs = dict(id = OAttr(STR),
+                  ip_addr = OAttr(STR),
+                  exists = Attr(bool, False),
+                  running = Attr(bool, False),
+                  paused = Attr(bool, False))
+    _opts = dict(optional_none = True)
+                        
+
+#-------------------------------------------------------------------------------
 # Group names
 
 RA = 'run_args'
@@ -25,7 +38,8 @@ HC = 'host_config'
 # Container attributes
 
 container_attrs = \
-dict(image = Attr(STR, doc='The image to run', groups=(RA, CC)),
+dict(status = Attr(ContainerStatus, init=lambda self: ContainerStatus()),
+     image = Attr(STR, doc='The image to run', groups=(RA, CC)),
      command = OAttr(STR, call=join, groups=(RA, CC),
                      doc='The command to be run in the container'),
      hostname = OAttr(STR, doc="Optional hostname for the container",
@@ -132,6 +146,7 @@ class Container(Base):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Container', 'RA', 'HC', 'CC')
+__all__ = ('Container', 'ContainerStatus',
+           'RA', 'HC', 'CC')
 
 #-------------------------------------------------------------------------------
