@@ -58,10 +58,20 @@ def test_container():
     name = 'foobarbaz1'
     assert not container_exists(name)
 
-    with container('mbodenhamer/alpine-data', name=name) as c:
-        assert c.name == name
-        assert container_exists(name)
+    class Foo(Exception): pass
 
+    raised = False
+    try:
+        with container('mbodenhamer/alpine-data', name=name) as c:
+            assert c.name == name
+            assert container_exists(name)
+            raise Foo
+
+    except Foo:
+        raised = True
+
+    # Test that container() deletes the container even if there is an error
+    assert raised
     assert not container_exists(name)
 
 #-------------------------------------------------------------------------------

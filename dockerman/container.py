@@ -251,8 +251,12 @@ def container(image, command='', **kwargs):
 
     c = Container(image, command, **kwargs)
     c.run()
-    yield c
-    c.remove()
+
+    try:
+        yield c
+
+    finally:
+        c.remove()
 
 #-------------------------------------------------------------------------------
 # __all__
