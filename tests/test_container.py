@@ -58,7 +58,7 @@ def test_container():
     name = 'foobarbaz1'
     assert not container_exists(name)
 
-    with container('mbodenhamer/alpine-data', name=name, detach=True) as c:
+    with container('mbodenhamer/alpine-data', name=name) as c:
         assert c.name == name
         assert container_exists(name)
 
@@ -68,7 +68,7 @@ def test_container():
 # Polling
 
 def test_polling():
-    with container('mbodenhamer/echoserver', detach=True) as c:
+    with container('mbodenhamer/echoserver') as c:
         c.poll(5000, timeout=5)
         assert c.is_port_live(5000)
         assert not c.is_port_live(5001)

@@ -247,6 +247,8 @@ class Container(Base):
 
 @contextmanager
 def container(image, command='', **kwargs):
+    kwargs['detach'] = kwargs.get('detach', True)
+
     c = Container(image, command, **kwargs)
     c.run()
     yield c
