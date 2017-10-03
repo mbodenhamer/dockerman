@@ -10,8 +10,6 @@ def join(obj=None, sep=' '):
 
 def split(obj=None, sep=None):
     if isinstance(obj, STR):
-        if sep is None:
-            return obj.split()
         return obj.split(sep)
     return obj
 

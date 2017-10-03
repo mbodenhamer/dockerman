@@ -4,13 +4,23 @@ import dockerman.utils as du
 # Argument processors
 
 def test_join():
-    pass
+    assert du.join() == None
+    assert du.join(['a', 'b']) == 'a b'
+    assert du.join(['a', 'b'], ',') == 'a,b'
 
 def test_split():
-    pass
+    assert du.split() == None
+    assert du.split('a b') == ['a', 'b']
+    assert du.split('a,b') == ['a,b']
+    assert du.split('a,b', ',') == ['a', 'b']
 
 def test_dictify_strings():
-    pass
+    assert du.dictify_strings() == None
+    assert du.dictify_strings(['a=b', 'c=d']) == {'a=b': '', 'c=d': ''}
+    assert du.dictify_strings(['a = b', 'c = d'], sep='=') == \
+        {'a = b': '', 'c = d': ''}
+    assert du.dictify_strings(['a = b', 'c = d'], sep='=', empty=False) == \
+        dict(a='b', c='d')
 
 #-------------------------------------------------------------------------------
 
