@@ -69,13 +69,26 @@ pip-compile:
 #-------------------------------------------------------------------------------
 # Tests
 
+PY36 = source .tox/py36/bin/activate
+QUICK_TEST = nosetests -v --pdb --pdb-failures
+UNIT_TEST = $(QUICK_TEST) -w ${PACKAGE}
+
 test:
 	@$(PYDEV) coverage erase
 	@$(PYDEV) tox
 	@$(PYDEV) coverage html
 
 quick-test:
-	@$(PYDEV) nosetests -v --pdb --pdb-failures
+	@$(PYDEV) $(QUICK_TEST)
+
+unit-test:
+	@$(PYDEV) $(UNIT_TEST)
+
+py3-quick-test:
+	@$(PYDEV) bash -c "$(PY36); $(QUICK_TEST)"
+
+py3-unit-test:
+	@$(PYDEV) bash -c "$(PY36); $(UNIT_TEST)"
 
 dist-test: build
 	@$(PYDEV) dist-test $(VERSION)
@@ -83,7 +96,8 @@ dist-test: build
 show:
 	@python -c "import webbrowser as wb; wb.open('htmlcov/index.html')"
 
-.PHONY: test quick-test dist-test show
+.PHONY: test quick-test unit-test dist-test show
+.PHONY: py3-quick-test py3-unit-test
 #-------------------------------------------------------------------------------
 # Cleanup
 
