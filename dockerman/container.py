@@ -1,6 +1,6 @@
 '''Representation of a Docker container.
 '''
-
+import os
 from functools import partial
 from syn.five import STR
 from syn.base import Base, Attr
@@ -8,6 +8,9 @@ from syn.utils.cmdargs import (Positional, Option, BinaryOption, arglist,
                                render_args)
 from syn.type import List, Dict
 from .utils import join, split, dictify_strings
+
+from docker.errors import NotFound
+from .base import CLIENT
 
 OAttr = partial(Attr, optional=True)
 comma_split = partial(split, sep=',')
@@ -23,9 +26,21 @@ class ContainerStatus(Base):
                   ip_addr = OAttr(STR),
                   exists = Attr(bool, False),
                   running = Attr(bool, False),
-                  paused = Attr(bool, False))
+                  paused = Attr(bool, False),
+                  dict = Attr(dict, init=lambda self: dict()))
     _opts = dict(optional_none = True)
-                        
+        
+    # TODO: integrate into syn.base as mixin
+    def reset(self):
+        attrs = self._attrs
+        for attr in attrs.attrs:
+            if attr in attrs.defaults:
+                setattr(self, attr, attrs.defaults[attr])
+            elif attr in attrs.init:
+                setattr(self, attr, attrs.init[attr](self))
+            elif attr in attrs.optional and self._opts.optional_none:
+                setattr(self, attr, None)
+    
 
 #-------------------------------------------------------------------------------
 # Group names
@@ -38,7 +53,7 @@ HC = 'host_config'
 # Container attributes
 
 container_attrs = \
-dict(status = Attr(ContainerStatus, init=lambda self: ContainerStatus()),
+dict(_status = Attr(ContainerStatus, init=lambda self: ContainerStatus()),
      image = Attr(STR, doc='The image to run', groups=(RA, CC)),
      command = OAttr(STR, call=join, groups=(RA, CC),
                      doc='The command to be run in the container'),
@@ -121,6 +136,24 @@ class Container(Base):
                  init_validate = True,
                  optional_none = True)
     
+    @property
+    def status(self, **kwargs):
+        client = kwargs.get('client', CLIENT)
+        try:
+            dct = client.inspect_container(self.name)
+        except NotFound:
+            self._status.reset()
+            return self._status
+
+        self._status.dict = dct
+        self._status.exists = True
+        self._status.running = dct['State']['Running']
+        self._status.paused = dct['State']['Paused']
+        self._status.ip_addr = dct['NetworkSettings']['IPAddress']
+        self._status.id = dct['Id']
+
+        return self._status
+
     def marshal_args(self, group):
         if group == RA:
             values = {RUN_ARGD[attr].name: val for attr, val 
@@ -141,6 +174,13 @@ class Container(Base):
             return dct
 
         raise ValueError('Invalid group: {}'.format(group))
+
+    def run(self, **kwargs):
+        cmd = 'docker run'
+        cmd += self.marshal_args(RA)
+        
+        print(cmd)
+        os.system(cmd)
 
 
 #-------------------------------------------------------------------------------

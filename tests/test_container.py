@@ -4,7 +4,8 @@ from dockerman import Container
 # Container creation/deletion
 
 def test_container_create_delete():
-    Container
+    #c = Container('mbodenhamer/alpine-data', detach=True)
+    pass
 
 #-------------------------------------------------------------------------------
 

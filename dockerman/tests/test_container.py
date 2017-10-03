@@ -12,14 +12,40 @@ def test_containerstatus():
     assert s.exists is False
     assert s.running is False
     assert s.paused is False
+    assert s.dict == {}
+
+    s.id = 'abc'
+    s.exists = True
+    s.dict = dict(a=1)
+
+    assert s.id == 'abc'
+    assert s.exists is True
+    assert s.dict == dict(a=1)
+
+    s.reset()
+    assert s.id is None
+    assert s.ip_addr is None
+    assert s.exists is False
+    assert s.running is False
+    assert s.paused is False
+    assert s.dict == {}
 
 #-------------------------------------------------------------------------------
 # Container
 
 def test_container():
-    c = Container('foo')
+    c = Container('foo', name='fooc')
     assert c.image == 'foo'
     assert c.status == ContainerStatus()
+
+    def bad(con):
+        con.status = 'xyz'
+
+    def bad2(con):
+        del con.status
+
+    assert_raises(AttributeError, bad, c)
+    assert_raises(AttributeError, bad2, c)
 
 #-------------------------------------------------------------------------------
 # run args marshalling
