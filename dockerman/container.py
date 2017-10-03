@@ -1,6 +1,5 @@
 '''Representation of a Docker container.
 '''
-import sys
 import time
 import socket
 from uuid import uuid4
@@ -202,7 +201,7 @@ class Container(Base):
 
     def poll(self, port, **kwargs):
         wait = kwargs.get('wait', 0.1)
-        timeout = kwargs.get('timeout', sys.float_info.max) # No timeout by default
+        timeout = kwargs.get('timeout', float('inf')) # No timeout by default
 
         if not self.status.running:
             raise RuntimeError('Container must be running to poll')
