@@ -1,11 +1,48 @@
+from time import sleep
 from dockerman import Container
 
 #-------------------------------------------------------------------------------
-# Container creation/deletion
+# Container start/stop/etc.
 
-def test_container_create_delete():
-    #c = Container('mbodenhamer/alpine-data', detach=True)
-    pass
+def test_container_start_stop():
+    c = Container('mbodenhamer/alpine-data', detach=True)
+    assert c.status.exists is False
+    
+    c.run()
+    sleep(0.2)
+    assert c.status.exists is True
+    assert c.status.running is True
+    assert c.status.paused is False
+
+    c.pause()
+    sleep(0.05)
+    assert c.status.exists is True
+    assert c.status.running is True
+    assert c.status.paused is True
+
+    c.unpause()
+    sleep(0.05)
+    assert c.status.exists is True
+    assert c.status.running is True
+    assert c.status.paused is False
+
+    c.stop()
+    sleep(0.2)
+    assert c.status.exists is True
+    assert c.status.running is False
+    assert c.status.paused is False
+
+    c.start()
+    sleep(0.2)
+    assert c.status.exists is True
+    assert c.status.running is True
+    assert c.status.paused is False
+
+    c.remove()
+    sleep(0.2)
+    assert c.status.exists is False
+    assert c.status.running is False
+    assert c.status.paused is False
 
 #-------------------------------------------------------------------------------
 

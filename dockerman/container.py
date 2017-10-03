@@ -78,7 +78,7 @@ dict(_status = Attr(ContainerStatus, init=lambda self: ContainerStatus()),
                           groups=(RA, CC)),
      network_disabled = Attr(bool, False, "Disable networking", groups=(CC,)),
      name = Attr(STR, doc='A name for the container', groups=(RA, CC),
-                 init=lambda self: uuid4().hex),
+                 init=lambda self: 'default-'+uuid4().hex),
      entrypoint = OAttr(STR, call=join, doc='Container entrypoint',
                         groups=(RA, CC)),
      cpu_shares = OAttr(int, doc='CPU shares (relative weight)', 
@@ -177,10 +177,37 @@ class Container(Base):
 
         raise ValueError('Invalid group: {}'.format(group))
 
+    # TODO: migrate to Popen and blocking
+    def pause(self, **kwargs):
+        cmd = 'docker pause ' + self.name
+        print(cmd)
+        os.system(cmd)
+
+    # TODO: add options
+    def remove(self, **kwargs):
+        cmd = 'docker rm -f -v ' + self.name
+        print(cmd)
+        os.system(cmd)
+
     def run(self, **kwargs):
         cmd = 'docker run'
         cmd += self.marshal_args(RA)
         
+        print(cmd)
+        os.system(cmd)
+
+    def start(self, **kwargs):
+        cmd = 'docker start ' + self.name
+        print(cmd)
+        os.system(cmd)
+
+    def stop(self, **kwargs):
+        cmd = 'docker stop ' + self.name
+        print(cmd)
+        os.system(cmd)
+
+    def unpause(self, **kwargs):
+        cmd = 'docker unpause ' + self.name
         print(cmd)
         os.system(cmd)
 
