@@ -158,6 +158,21 @@ class Container(Base):
 
         return self._status
 
+    def is_port_live(self, port, force=False):
+        if (self.status.paused or not self.status.running) and not force:
+            return False
+
+        sock = socket.socket()
+        try:
+            sock.connect((self.status.ip_addr, port))
+            sock.close()
+            return True
+        except socket.error as e:
+            if e.errno == 111:  # Connection refused
+                return False
+            else:
+                raise e
+
     # TODO: rename to marshal_run_args
     def marshal_args(self, group):
         if group == RA:
@@ -186,23 +201,23 @@ class Container(Base):
 
     def poll(self, port, **kwargs):
         wait = kwargs.get('wait', 0.1)
+        timeout = kwargs.get('timeout', 10)
 
         if not self.status.running:
             raise RuntimeError('Container must be running to poll')
         if self.status.paused:
             raise RuntimeError('Cannot poll paused container')
 
-        sock = socket.socket()
+        start_time = time.time()
         while True:
-            try:
-                sock.connect((self.status.ip_addr, port))
-                sock.close()
-                break
-            except socket.error as e:
-                if e.errno == 111:  # Connection refused
-                    time.sleep(wait)
+            if not self.is_port_live(port):
+                ctime = time.time()
+                if (ctime - start_time) >= timeout:
+                    raise RuntimeError('Timeout on poll()')
                 else:
-                    raise e
+                    time.sleep(wait)
+            else:
+                break
 
     # TODO: add options
     def remove(self, **kwargs):
