@@ -3,7 +3,7 @@ all: test
 VERSION = `cat version.txt | xargs`
 
 PACKAGE = dockerman
-IMAGE = mbodenhamer/${PACKAGE}-dev
+IMAGE = mbodenhamer/${PACKAGE}-dev:latest
 PYDEV = docker run --rm -it -e BE_UID=`id -u` -e BE_GID=`id -g` \
 	-v /var/run/docker.sock:/var/run/docker.sock -v $(CURDIR):/app $(IMAGE)
 VERSIONS = 2.7.14,3.6.2
