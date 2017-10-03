@@ -1,18 +1,21 @@
 from syn.five import STR
 
-def join(obj, sep=' '):
+#-------------------------------------------------------------------------------
+# Argument processors
+
+def join(obj=None, sep=' '):
     if isinstance(obj, list):
         return sep.join(obj)
     return obj
 
-def split(obj, sep=None):
+def split(obj=None, sep=None):
     if isinstance(obj, STR):
         if sep is None:
             return obj.split()
         return obj.split(sep)
     return obj
 
-def dictify_strings(obj, empty=True, sep=None):
+def dictify_strings(obj=None, empty=True, sep=None):
     if isinstance(obj, list):
         ret = {}
         for s in obj:
@@ -24,3 +27,10 @@ def dictify_strings(obj, empty=True, sep=None):
             ret[name.strip()] = val.strip()
         return ret
     return obj
+
+#-------------------------------------------------------------------------------
+# __all__
+
+__all__ = ('join', 'split', 'dictify_strings')
+
+#-------------------------------------------------------------------------------

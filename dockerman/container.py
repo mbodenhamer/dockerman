@@ -110,27 +110,28 @@ class Container(Base):
     def marshal_args(self, group):
         if group == RA:
             values = {RUN_ARGD[attr].name: val for attr, val 
-                      in self.to_dict(group, include=True).items() 
+                      in self.to_dict(include=[group]).items() 
                       if val is not None}
             return render_args(RUN_ARGS, values)
 
         if group == HC:
             dct = {attr:val for attr, val in
-                   self.to_dict(group, include=True).items() if val is not None}
+                   self.to_dict(include=[group]).items() if val is not None}
             return dct
 
         if group == CC:
             hc = self.marshal_args(HC)
             dct = {attr: val for attr, val in 
-                   self.to_dict(group, include=True).items() if val is not None}
+                   self.to_dict(include=[group]).items() if val is not None}
             dct['host_config'] = hc
             return dct
 
         raise ValueError('Invalid group: {}'.format(group))
 
+
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Container',)
+__all__ = ('Container', 'RA', 'HC', 'CC')
 
 #-------------------------------------------------------------------------------

@@ -1,10 +1,16 @@
-from dockerman import Container
+import dockerman.utils as du
 
 #-------------------------------------------------------------------------------
-# Container creation/deletion
+# Argument processors
 
-def test_container_create_delete():
-    Container
+def test_join():
+    pass
+
+def test_split():
+    pass
+
+def test_dictify_strings():
+    pass
 
 #-------------------------------------------------------------------------------
 
