@@ -1,4 +1,9 @@
+import shlex
+from subprocess import Popen, PIPE
 from syn.five import STR
+
+from docker.errors import NotFound
+from .base import CLIENT
 
 #-------------------------------------------------------------------------------
 # Argument processors
@@ -27,8 +32,26 @@ def dictify_strings(obj=None, empty=True, sep=None):
     return obj
 
 #-------------------------------------------------------------------------------
+# Process utilities
+
+def call(s):
+    proc = Popen(shlex.split(s), stdout=PIPE, stderr=PIPE)
+    (out, err) = proc.communicate()
+    return out,err
+
+#-------------------------------------------------------------------------------
+# Docker utilities
+
+def container_exists(name, client=CLIENT):
+    try:
+        client.inspect_container(name)
+        return True
+    except NotFound:
+        return False
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('join', 'split', 'dictify_strings')
+__all__ = ('join', 'split', 'dictify_strings', 'container_exists')
 
 #-------------------------------------------------------------------------------

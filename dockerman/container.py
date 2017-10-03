@@ -1,16 +1,14 @@
 '''Representation of a Docker container.
 '''
-import shlex
 from uuid import uuid4
 from functools import partial
-from subprocess import Popen, PIPE
 from contextlib import contextmanager
 from syn.five import STR
 from syn.base import Base, Attr
 from syn.utils.cmdargs import (Positional, Option, BinaryOption, arglist, 
                                render_args)
 from syn.type import List, Dict
-from .utils import join, split, dictify_strings
+from .utils import join, split, dictify_strings, call
 
 from docker.errors import NotFound
 from .base import CLIENT
@@ -19,14 +17,6 @@ OAttr = partial(Attr, optional=True)
 comma_split = partial(split, sep=',')
 dictify_eqstrings = partial(dictify_strings, empty=False, sep='=')
 Single = partial(Option, interleave=False)
-
-#-------------------------------------------------------------------------------
-# call
-
-def call(s):
-    proc = Popen(shlex.split(s), stdout=PIPE, stderr=PIPE)
-    (out, err) = proc.communicate()
-    return out,err
 
 #-------------------------------------------------------------------------------
 # Status
@@ -221,7 +211,7 @@ class Container(Base):
 def container(image, command='', **kwargs):
     c = Container(image, command, **kwargs)
     c.run()
-    yield
+    yield c
     c.remove()
 
 #-------------------------------------------------------------------------------

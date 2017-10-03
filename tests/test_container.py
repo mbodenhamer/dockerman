@@ -1,4 +1,5 @@
-from dockerman import Container
+from dockerman import Container, container
+from dockerman.utils import call, container_exists
 
 #-------------------------------------------------------------------------------
 # Container start/stop/etc.
@@ -12,7 +13,7 @@ def test_container_start_stop():
     assert c.status.running is True
     assert c.status.paused is False
 
-    # Add docker ps test
+    assert container_exists(c.name)
 
     c.pause()
     assert c.status.exists is True
@@ -39,7 +40,20 @@ def test_container_start_stop():
     assert c.status.running is False
     assert c.status.paused is False
 
-    # Add docker ps test
+    assert not container_exists(c.name)
+
+#-------------------------------------------------------------------------------
+# Container context manager
+
+def test_container():
+    name = 'foobarbaz1'
+    assert not container_exists(name)
+
+    with container('mbodenhamer/alpine-data', name=name, detach=True) as c:
+        assert c.name == name
+        assert container_exists(name)
+
+    assert not container_exists(name)
 
 #-------------------------------------------------------------------------------
 
