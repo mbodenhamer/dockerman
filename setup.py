@@ -28,7 +28,7 @@ setup(
     license = 'MIT',
     keywords = ['docker', 'application'],
     classifiers = [
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 2 - Pre-Alpha',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
