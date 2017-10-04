@@ -1,4 +1,5 @@
 import shlex
+import socket
 from subprocess import Popen, PIPE
 from syn.five import STR
 
@@ -40,6 +41,22 @@ def call(s):
     return out,err
 
 #-------------------------------------------------------------------------------
+# Network utilities
+
+def scan_port(addr, port):
+    sock = socket.socket()
+    try:
+        sock.settimeout(1)
+        sock.connect((addr, port))
+        sock.close()
+        return True
+    except socket.error as e:
+        if e.errno == 111:  # Connection refused
+            return False
+        else:
+            raise e
+
+#-------------------------------------------------------------------------------
 # Docker utilities
 
 def container_exists(name, client=CLIENT):
@@ -52,6 +69,9 @@ def container_exists(name, client=CLIENT):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('join', 'split', 'dictify_strings', 'container_exists')
+__all__ = ('join', 'split', 'dictify_strings', 
+           'call', 
+           'scan_port',
+           'container_exists')
 
 #-------------------------------------------------------------------------------

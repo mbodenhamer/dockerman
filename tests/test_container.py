@@ -1,7 +1,7 @@
 import socket
 from nose.tools import assert_raises
 from dockerman import Container, container
-from dockerman.utils import container_exists
+from dockerman.utils import container_exists, scan_port
 
 #-------------------------------------------------------------------------------
 # Container start/stop/etc.
@@ -15,7 +15,9 @@ def test_container_start_stop():
     assert c.status.running is True
     assert c.status.paused is False
 
+    ip_addr = c.status.ip_addr
     assert not c.is_port_live(22)
+    assert not scan_port(ip_addr, 22)
     assert container_exists(c.name)
 
     c.pause()
@@ -36,7 +38,6 @@ def test_container_start_stop():
     assert c.status.paused is False
 
     assert not c.is_port_live(22)
-    #assert_raises(socket.error, c.is_port_live, 22, force=True)
     assert_raises(RuntimeError, c.poll, 22)
 
     c.start()
@@ -50,6 +51,8 @@ def test_container_start_stop():
     assert c.status.paused is False
 
     assert not container_exists(c.name)
+    assert not c.is_port_live(22)
+    assert_raises(socket.error, scan_port, ip_addr, 22)
 
 #-------------------------------------------------------------------------------
 # Container context manager

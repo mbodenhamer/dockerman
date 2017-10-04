@@ -9,7 +9,7 @@ def test_containerstatus():
     s = ContainerStatus()
 
     assert s.id is None
-    assert s.ip_addr is None
+    assert s.ip_addr == ''
     assert s.exists is False
     assert s.running is False
     assert s.paused is False
@@ -25,7 +25,7 @@ def test_containerstatus():
 
     s.reset()
     assert s.id is None
-    assert s.ip_addr is None
+    assert s.ip_addr == ''
     assert s.exists is False
     assert s.running is False
     assert s.paused is False

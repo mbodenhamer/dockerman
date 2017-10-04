@@ -1,7 +1,6 @@
 '''Representation of a Docker container.
 '''
 import time
-import socket
 from uuid import uuid4
 from functools import partial
 from contextlib import contextmanager
@@ -10,7 +9,7 @@ from syn.base import Base, Attr
 from syn.utils.cmdargs import (Positional, Option, BinaryOption, arglist, 
                                render_args)
 from syn.type import List, Dict
-from .utils import join, split, dictify_strings, call
+from .utils import join, split, dictify_strings, call, scan_port
 
 from docker.errors import NotFound
 from .base import CLIENT
@@ -26,7 +25,7 @@ Single = partial(Option, interleave=False)
 
 class ContainerStatus(Base):
     _attrs = dict(id = OAttr(STR),
-                  ip_addr = OAttr(STR),
+                  ip_addr = Attr(STR, ''),
                   exists = Attr(bool, False),
                   running = Attr(bool, False),
                   paused = Attr(bool, False),
@@ -158,20 +157,10 @@ class Container(Base):
 
         return self._status
 
-    def is_port_live(self, port, force=False):
-        if (self.status.paused or not self.status.running) and not force:
+    def is_port_live(self, port):
+        if self.status.paused or not self.status.running:
             return False
-
-        sock = socket.socket()
-        try:
-            sock.connect((self.status.ip_addr, port))
-            sock.close()
-            return True
-        except socket.error as e:
-            if e.errno == 111:  # Connection refused
-                return False
-            else:
-                raise e
+        return scan_port(self.status.ip_addr, port)
 
     # TODO: rename to marshal_run_args
     def marshal_args(self, group):
